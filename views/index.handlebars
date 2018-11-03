@@ -201,6 +201,7 @@ canvas {
     peoplePerSecond = saved.peoplePerSecond;
   }
   
+  let interval;
   window.onload = () => {
     load();
     socket.on('unlocks', (rows) => {
@@ -209,7 +210,8 @@ canvas {
       console.log({...parsed})
       allUnlocks.push(...parsed);
       main();
-      setInterval(main, 100);
+      if (interval) clearInterval(interval);
+      interval = setInterval(main, 1000);
     });
   }
 </script>
