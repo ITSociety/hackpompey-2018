@@ -3,9 +3,21 @@ const http = require('http');
 const logger = require('morgan')('dev');
 const socket = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 const exphbs  = require('express-handlebars');
-
 const router = require('./router');
+
+fs.readFileSync(path.join(__dirname, '.env'))
+.toString()
+.split('\n')
+.forEach(line => {
+  const [key, ...vals] = line.split('=');
+  const val = vals.join('=');
+  process.env[key] = val;
+  console.log(`set ${key} to ${val}`);
+});
+
+const db = require('./db');
 
 const sockLog = (...args) => console.log(`>socket ${new Date()}`, ...args)
 
@@ -16,8 +28,11 @@ const io = socket(server);
 
 io.on('connection', sock => {
   sockLog('client connected');
+  db.getUnlocks().then(({rows}) => {
+    sock.emit('unlocks', JSON.stringify(rows));
+  });
 });
-
+  
 const port = process.env.PORT || 8080;
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));

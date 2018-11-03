@@ -1,16 +1,23 @@
+
+
 <div id='particles-js'>
+  <div class="space">
 
 <ul class="ticker">
   <li>Welcome to the world</li>
 </ul>
-  <div class="meatsacks">Total meatsacks: <span class="meatsacks-total"></span></div>
-  <div class="currency">Total currency: <span class="currency-total"></span></div>
+<div class="meatsacks">Total meatsacks:
+  <span class="meatsacks-total"></span>
+</div>
+<div class="currency">Total currency:
+  <span class="currency-total"></span>
+</div>
 
-  <div class="planet"></div>
+<div class="planet"></div>
 
 
-  <div class="reset">launch tactical nuke</div>
-  <code>
+<div class="reset">launch tactical nuke</div>
+<code>
       <div class="meatsacks">Total meatsacks P/S:
         <span class="meatsacks-ps-total"></span>
       </div>
@@ -18,7 +25,10 @@
         <span class="currency-ps-total"></span>
       </div>
   </code>
+  <div class="unlocks"></div>
+  </div>  
 </div>
+
 <style>
   /* ---- reset ---- */
 
@@ -26,6 +36,7 @@ body {
   margin: 0;
   background-color: #17182f;
   color: #fff;
+  font-family: sans-serif;
 }
 
 canvas {
@@ -41,14 +52,21 @@ canvas {
   width: 100%;
   height: 100%;
 }
-  .planet {
-    width: 200;
-    height: 200;
-    background: blue;
-    display: block;
-    border-radius: 100px;
-    cursor: pointer;
-  }  
+.planet {
+  width: 200;
+  height: 200;
+  background: blue;
+  display: block;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+.space {
+  position: absolute;
+  right: 50%;
+  margin-right: -100px;
+  width: 200px;
+}
 </style>
 <script>
   const totalPeople = document.querySelector('.meatsacks-total');
@@ -61,10 +79,32 @@ canvas {
 
   const reset = document.querySelector('.reset');
 
+  const unlocks = document.querySelector('.unlocks');
+  
   let peopleCount = 1;
   let moneyCount = 1;
   let peoplePerSecond = 1;
   let moneyPerSecond = 1;
+  
+
+  // some unlockable:
+  /** { 
+    title: 'sex', 
+    description: '', 
+    humansRequired: 2, 
+    humansCost: 0,
+    currencyCost: 0, 
+    humansPerSecond: 1, 
+    currencyPerSecond: 0,
+    humanMultiplier: 1,
+    currencyMultiplier: 1,
+  }
+  */
+
+  const allUnlocks = [];
+  let availableUnlocks = []
+  const unlocked = []
+
 
   planet.addEventListener('click', (ev) => {
     ev.preventDefault();
@@ -82,7 +122,7 @@ canvas {
 
   // Add currency per second to our bank
   function main() {
-    peopleCount += peoplePerSecond;
+    peopleCount = (peopleCount + peoplePerSecond);
     moneyCount += moneyPerSecond;
     totalPeople.textContent = peopleCount;
     totalMoney.textContent = moneyCount;
@@ -90,12 +130,48 @@ canvas {
     totalPeoplePS.textContent = peoplePerSecond;
     totalMoneyPS.textContent = moneyPerSecond;
     save();
+
+    generateAvailableUnlocks()
   }
 
   // add our clicks to our bank
-  function click() {
+  function generateAvailableUnlocks() {
+    //unlocks.innerHTML = "";
+    const elements = getUnlocksDomList(allUnlocks.filter(unlock => peopleCount >= unlock.peoplerequired && moneyCount >= unlock.currencyrequired));
 
+    {{!-- console.log(elements) --}}
+    if(elements.length > unlocks.childNodes.length) {
+      unlocks.innerHTML = "";
+      elements.forEach(unlock => unlocks.appendChild(unlock));
+    }
   }
+
+  function h(args, text, classList='') {
+    const elem = document.createElement(args);
+    elem.classList = classList;
+    elem.textContent = text;
+    return elem;
+  };
+
+  function unlockElement(elem) {
+    {{!-- console.log(elem.dataset.peoplemultiplyer); --}}
+      moneyPerSecond = (moneyPerSecond || 1) * (elem.dataset.currencymultiplyer || 1);
+      peoplePerSecond = (peoplePerSecond || 1) * (elem.dataset.peoplemultiplyer || 1);
+      //peopleCount = elem.dataset.currencyCost;
+      moneyCount = parseInt(moneyCount, 10) - parseInt(elem.dataset.currencycost, 10);
+      {{!-- console.log({ moneyPerSecond, peoplePerSecond, moneyCount }) --}}
+  }
+
+  const getUnlocksDomList = (a, locked = false) => a
+    .map(unlock => {
+      const outer = h('div', '', `unlock ${locked ? 'locked' : 'unlocked'}`);
+      const nameDOM = h('span', (unlock.title + ": "), 'unlock-name');
+      const descDOM = h('span', unlock.description, 'unlock-desc');
+      [nameDOM, descDOM].forEach(elem => outer.appendChild(elem));
+      Object.keys(unlock).forEach(key => outer.dataset[key] = unlock[key]);
+      outer.addEventListener('click', () => unlockElement(outer));
+      return outer;      
+    });
 
   // unlock things and change our currencyPerSecond or humans/s
   function unlock() {
@@ -113,9 +189,6 @@ canvas {
         moneyCount, 
       })
     );
-    {{!-- console.log({
-      saved: JSON.parse(localStorage.getItem('stats'))
-    }) --}}
   }
 
   function load() {
@@ -130,12 +203,19 @@ canvas {
   
   window.onload = () => {
     load();
-    main();
-    setInterval(main, 1000);
+    socket.on('unlocks', (rows) => {
+      const parsed = JSON.parse(rows);
+      allUnlocks.length = 0;
+      console.log({...parsed})
+      allUnlocks.push(...parsed);
+      main();
+      setInterval(main, 100);
+    });
   }
 </script>
 
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
 <script>
 particlesJS("particles-js", {
   "particles": {
