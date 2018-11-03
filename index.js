@@ -7,13 +7,15 @@ const exphbs  = require('express-handlebars');
 
 const router = require('./router');
 
+const sockLog = (...args) => console.log(`>socket ${new Date()}`, ...args)
+
 
 const app = express();
 const server = http.createServer(app);
 const io = socket(server);
 
 io.on('connection', sock => {
-  console.log('oioi');
+  sockLog('client connected');
 });
 
 const port = process.env.PORT || 8080;

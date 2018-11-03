@@ -1,1 +1,250 @@
-index
+<div id='particles-js'>
+
+<ul class="ticker">
+  <li>Welcome to the world</li>
+</ul>
+  <div class="meatsacks">Total meatsacks: <span class="meatsacks-total"></span></div>
+  <div class="currency">Total currency: <span class="currency-total"></span></div>
+
+  <div class="planet"></div>
+
+
+  <div class="reset">launch tactical nuke</div>
+  <code>
+      <div class="meatsacks">Total meatsacks P/S:
+        <span class="meatsacks-ps-total"></span>
+      </div>
+      <div class="currency">Total currency P/S:
+        <span class="currency-ps-total"></span>
+      </div>
+  </code>
+</div>
+<style>
+  /* ---- reset ---- */
+
+body {
+  margin: 0;
+  background-color: #17182f;
+  color: #fff;
+}
+
+canvas {
+  display: block;
+  vertical-align: bottom;
+}
+
+
+/* ---- particles.js container ---- */
+
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+  .planet {
+    width: 200;
+    height: 200;
+    background: blue;
+    display: block;
+    border-radius: 100px;
+    cursor: pointer;
+  }  
+</style>
+<script>
+  const totalPeople = document.querySelector('.meatsacks-total');
+  const totalMoney = document.querySelector('.currency-total');
+  
+  const totalPeoplePS = document.querySelector('.meatsacks-ps-total');
+  const totalMoneyPS = document.querySelector('.currency-ps-total');
+  
+  const planet = document.querySelector('.planet');
+
+  const reset = document.querySelector('.reset');
+
+  let peopleCount = 1;
+  let moneyCount = 1;
+  let peoplePerSecond = 1;
+  let moneyPerSecond = 1;
+
+  planet.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    peopleCount += 1;
+    totalPeople.textContent = peopleCount;
+  })
+
+  reset.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      peopleCount = 1;
+      moneyCount = 1;
+      peoplePerSecond = 0;
+      moneyPerSecond = 0;
+    })
+
+  // Add currency per second to our bank
+  function main() {
+    peopleCount += peoplePerSecond;
+    moneyCount += moneyPerSecond;
+    totalPeople.textContent = peopleCount;
+    totalMoney.textContent = moneyCount;
+
+    totalPeoplePS.textContent = peoplePerSecond;
+    totalMoneyPS.textContent = moneyPerSecond;
+    save();
+  }
+
+  // add our clicks to our bank
+  function click() {
+
+  }
+
+  // unlock things and change our currencyPerSecond or humans/s
+  function unlock() {
+
+  }
+
+  function save() {
+    localStorage.setItem(
+      'stats',
+      // globals
+      JSON.stringify({ 
+        currencyPerSecond, 
+        peoplePerSecond,
+        peopleCount, 
+        moneyCount, 
+      })
+    );
+    {{!-- console.log({
+      saved: JSON.parse(localStorage.getItem('stats'))
+    }) --}}
+  }
+
+  function load() {
+    const saved = JSON.parse(localStorage.getItem('stats'));
+    if (!saved) return;
+    console.log('loading data:', { saved });
+    peopleCount = saved.peopleCount;
+    currencyPerSecond = saved.currencyPerSecond;
+    moneyCount = saved.moneyCount;
+    peoplePerSecond = saved.peoplePerSecond;
+  }
+  
+  window.onload = () => {
+    load();
+    main();
+    setInterval(main, 1000);
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+particlesJS("particles-js", {
+  "particles": {
+    "number": {
+      "value": 355,
+      "density": {
+        "enable": true,
+        "value_area": 789.1476416322727
+      }
+    },
+    "color": {
+      "value": "#ffffff"
+    },
+    "shape": {
+      "type": "circle",
+      "stroke": {
+        "width": 0,
+        "color": "#000000"
+      },
+      "polygon": {
+        "nb_sides": 5
+      },
+      "image": {
+        "src": "img/github.svg",
+        "width": 100,
+        "height": 100
+      }
+    },
+    "opacity": {
+      "value": 0.48927153781200905,
+      "random": false,
+      "anim": {
+        "enable": true,
+        "speed": 0.2,
+        "opacity_min": 0,
+        "sync": false
+      }
+    },
+    "size": {
+      "value": 2,
+      "random": true,
+      "anim": {
+        "enable": true,
+        "speed": 2,
+        "size_min": 0,
+        "sync": false
+      }
+    },
+    "line_linked": {
+      "enable": false,
+      "distance": 150,
+      "color": "#ffffff",
+      "opacity": 0.4,
+      "width": 1
+    },
+    "move": {
+      "enable": true,
+      "speed": 0.2,
+      "direction": "none",
+      "random": true,
+      "straight": false,
+      "out_mode": "out",
+      "bounce": false,
+      "attract": {
+        "enable": false,
+        "rotateX": 600,
+        "rotateY": 1200
+      }
+    }
+  },
+  "interactivity": {
+    "detect_on": "canvas",
+    "events": {
+      "onhover": {
+        "enable": true,
+        "mode": "bubble"
+      },
+      "onclick": {
+        "enable": true,
+        "mode": "push"
+      },
+      "resize": true
+    },
+    "modes": {
+      "grab": {
+        "distance": 400,
+        "line_linked": {
+          "opacity": 1
+        }
+      },
+      "bubble": {
+        "distance": 83.91608391608392,
+        "size": 1,
+        "duration": 3,
+        "opacity": 1,
+        "speed": 3
+      },
+      "repulse": {
+        "distance": 200,
+        "duration": 0.4
+      },
+      "push": {
+        "particles_nb": 4
+      },
+      "remove": {
+        "particles_nb": 2
+      }
+    }
+  },
+  "retina_detect": true
+});
+</script>
