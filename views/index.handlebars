@@ -2,28 +2,33 @@
 
 <div id='particles-js'>
   <div class="space">
-
-<div class="meatsacks">Total meatsacks:
-  <span class="meatsacks-total"></span>
-</div>
-<div class="currency">Total currency:
-  <span class="currency-total"></span>
-</div>
-
-<div class="planet"></div>
-
-
-<div class="reset">launch tactical nuke</div>
-<code>
-      <div class="meatsacks">Total meatsacks P/S:
-        <span class="meatsacks-ps-total"></span>
+    <div class="stats">
+      <div class="meatsacks">Total meatsacks:
+        <span class="meatsacks-total"></span>
       </div>
-      <div class="currency">Total currency P/S:
-        <span class="currency-ps-total"></span>
+      <div class="currency">Total currency:
+        <span class="currency-total"></span>
       </div>
-  </code>
-  <div class="unlocks"></div>
-  </div>  
+    </div>
+    <div class="planet"></div>
+  </div>
+  <div class="reset">KILL ALL</div>
+
+  <div class="unlock-container">
+    <span class="store-title">Unlocks 🔓</span> 
+    <div class="unlocks"></div>
+  </div> 
+  
+  <div class="stats-container">
+    <span class="stats-title">Stats</span>
+    <div class="meatsacks">Total meatsacks P/S:
+      <span class="meatsacks-ps-total"></span>
+    </div>
+    <div class="currency">Total currency P/S:
+      <span class="currency-ps-total"></span>
+    </div>
+  </div>
+  
 </div>
 
 <style>
@@ -33,7 +38,7 @@ body {
   margin: 0;
   background-color: #17182f;
   color: #fff;
-  font-family: sans-serif;
+  font-family: monospace;
 }
 
 canvas {
@@ -56,6 +61,7 @@ canvas {
   display: block;
   border-radius: 100px;
   cursor: pointer;
+  margin: 20px 0px 20px 0px;
 }
 
 .space {
@@ -63,6 +69,57 @@ canvas {
   right: 50%;
   margin-right: -100px;
   width: 200px;
+  text-align: center;
+}
+
+.stats {
+  text-align: center;
+  font-size: 2em;
+  font-family: monospace;
+}
+
+.stats-title{
+  text-align: left !important;
+  font-size: 1.5em;
+}
+
+.unlock {
+  cursor: pointer;
+} 
+.unlocked{
+  border: 0.5px #fff solid;
+  padding: 5px;
+  margin: 10px;
+}
+.unlock-container{
+  border: #fff 1px solid;
+  float: right;
+  max-width: 30%;
+  min-width: 31%;
+  padding: 10px;
+  margin: 10px 10px 0 0;
+}
+
+.stats-container{
+  border: #fff 1px solid;
+  float: left;
+  max-width: 30%;
+  min-width: 31%;
+  padding: 10px;
+  text-align: right;
+  margin: 10px 0 0 10px;
+}
+
+.store-title{
+  font-size: 1.5em;
+}
+
+.reset {
+  position: absolute;
+  cursor: pointer;
+  bottom: 0;
+  font-size: 2em;
+  color: red;
 }
 </style>
 <script>
@@ -79,7 +136,7 @@ canvas {
   const unlocks = document.querySelector('.unlocks');
   
   let peopleCount = 1;
-  let moneyCount = 1;
+  let moneyCount = 0;
   let peoplePerSecond = 0;
   let moneyPerSecond = 0;
   
@@ -106,23 +163,24 @@ canvas {
   planet.addEventListener('click', (ev) => {
     ev.preventDefault();
     peopleCount += 1;
-    totalPeople.textContent = peopleCount;
+    totalPeople.textContent = Math.floor(peopleCount);
   })
 
   reset.addEventListener('click', (ev) => {
       ev.preventDefault();
       peopleCount = 1;
-      moneyCount = 1;
+      moneyCount = 0;
       peoplePerSecond = 0;
       moneyPerSecond = 0;
     })
 
   // Add currency per second to our bank
   function main() {
-    peopleCount = (peopleCount + peoplePerSecond);
+    peopleCount += peoplePerSecond;
     moneyCount += moneyPerSecond;
-    totalPeople.textContent = peopleCount;
-    totalMoney.textContent = moneyCount;
+    
+    totalPeople.textContent = Math.floor(peopleCount);
+    totalMoney.textContent = Math.floor(moneyCount);
 
     totalPeoplePS.textContent = peoplePerSecond;
     totalMoneyPS.textContent = moneyPerSecond;
@@ -132,7 +190,7 @@ canvas {
 
   // add our clicks to our bank
   function generateAvailableUnlocks() {
-    const elements = getUnlocksDomList(allUnlocks.filter(unlock => -1 == unlocked.indexOf(unlock.id)).filter(unlock => peopleCount >= unlock.peoplerequired && moneyCount >= unlock.currencyrequired));
+    const elements = getUnlocksDomList(allUnlocks.filter(unlock => -1 == unlocked.indexOf(unlock.id)).filter(unlock => peopleCount >= unlock.peoplerequired && moneyCount >= unlock.currencyrequired)).splice(0,5);
 
     if(elements.length !== unlocks.childNodes.length) {
       unlocks.innerHTML = "";
@@ -148,19 +206,27 @@ canvas {
   };
 
   function unlockElement(elem) {
-      peoplePerSecond = ((peoplePerSecond > 0 ? peoplePerSecond * elem.dataset.peoplemultiplyer : 1 * elem.dataset.peoplemultiplyer));
-      moneyPerSecond = ((moneyPerSecond > 0 ? moneyPerSecond * elem.dataset.currencymultiplyer : 0 * elem.dataset.currencymultiplyer));
+      console.log(peoplePerSecond + parseFloat(elem.dataset.peoplemultiplier));
+
+      peoplePerSecond = peoplePerSecond + parseFloat(elem.dataset.peoplemultiplier);
+      moneyPerSecond = moneyPerSecond + parseFloat(elem.dataset.currencymultiplier);
+
+      console.log(peoplePerSecond, moneyPerSecond);
+
+      //peoplePerSecond = ((peoplePerSecond > 0 ? peoplePerSecond * elem.dataset.peoplemultiplyer : 1 * elem.dataset.peoplemultiplyer));
+      //moneyPerSecond = ((moneyPerSecond > 0 ? moneyPerSecond * elem.dataset.currencymultiplyer : 0 * elem.dataset.currencymultiplyer));
       //peopleCount = elem.dataset.currencyCost;
-      moneyCount = parseInt(moneyCount, 10) - parseInt(elem.dataset.currencycost, 10);
+      //moneyCount = parseInt(moneyCount, 10) - parseInt(elem.dataset.currencycost, 10);
       unlocked.push(parseInt(elem.dataset.id,10));
   }
 
   const getUnlocksDomList = (a, locked = false) => a
     .map(unlock => {
       const outer = h('div', '', `unlock ${locked ? 'locked' : 'unlocked'}`);
-      const nameDOM = h('span', (unlock.title + ": "), 'unlock-name');
-      const descDOM = h('span', unlock.description, 'unlock-desc');
-      [nameDOM, descDOM].forEach(elem => outer.appendChild(elem));
+      const nameDOM = h('span', unlock.title, 'unlock-name');
+      const descDOM = h('div', unlock.description, 'unlock-desc');
+      const costDOM = h('span', unlock.currencycost, 'unlock-cost');
+      [nameDOM, descDOM, costDOM].forEach(elem => outer.appendChild(elem));
       Object.keys(unlock).forEach(key => outer.dataset[key] = unlock[key]);
       outer.addEventListener('click', () => unlockElement(outer));
       return outer;      
