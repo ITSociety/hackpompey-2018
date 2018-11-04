@@ -130,16 +130,15 @@ canvas {
     totalPeoplePS.textContent = peoplePerSecond;
     totalMoneyPS.textContent = moneyPerSecond;
     save();
-
     generateAvailableUnlocks()
   }
 
   // add our clicks to our bank
   function generateAvailableUnlocks() {
-    //unlocks.innerHTML = "";
+    socket.emit('requestUnlocks');
+
     const elements = getUnlocksDomList(allUnlocks.filter(unlock => peopleCount >= unlock.peoplerequired && moneyCount >= unlock.currencyrequired));
 
-    {{!-- console.log(elements) --}}
     if(elements.length > unlocks.childNodes.length) {
       unlocks.innerHTML = "";
       elements.forEach(unlock => unlocks.appendChild(unlock));
@@ -183,7 +182,7 @@ canvas {
       'stats',
       // globals
       JSON.stringify({ 
-        currencyPerSecond, 
+        moneyPerSecond, 
         peoplePerSecond,
         peopleCount, 
         moneyCount, 
@@ -204,16 +203,19 @@ canvas {
   let interval;
   window.onload = () => {
     load();
-    socket.on('unlocks', (rows) => {
+    main();
+    setInterval(main, 1000);
+  }
+
+  socket.on('unlocks', (rows) => {
       const parsed = JSON.parse(rows);
       allUnlocks.length = 0;
-      console.log({...parsed})
+      console.log({ ...parsed })
       allUnlocks.push(...parsed);
-      main();
-      if (interval) clearInterval(interval);
-      interval = setInterval(main, 1000);
+
+      //if (interval) clearInterval(interval);
+      //interval = setInterval(main, 1000);
     });
-  }
 </script>
 
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
