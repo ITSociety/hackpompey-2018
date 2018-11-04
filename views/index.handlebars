@@ -1,16 +1,17 @@
-
-
 <div id='particles-js'>
   <div class="space">
     <div class="stats">
-      <div class="meatsacks">Total meatsacks:
+      <h2>Planet: ITSociety</h2>
+      <div class="meatsacks">Total 👪:
         <span class="meatsacks-total"></span>
       </div>
-      <div class="currency">Total currency:
+      <div class="currency">Total 🤑:
         <span class="currency-total"></span>
       </div>
     </div>
-    <div class="planet"></div>
+    <div class="planet pulse-single">
+      <img src="http://localhost:8080/images/planet.png">
+    </div>
   </div>
   <div class="reset">KILL ALL</div>
 
@@ -20,11 +21,11 @@
   </div> 
   
   <div class="stats-container">
-    <span class="stats-title">Stats</span>
-    <div class="meatsacks">Total meatsacks P/S:
+    <span class="stats-title">Stats 📈</span>
+    <div class="meatsacks">Total 👪 P/S:
       <span class="meatsacks-ps-total"></span>
     </div>
-    <div class="currency">Total currency P/S:
+    <div class="currency">Total 🤑 P/S:
       <span class="currency-ps-total"></span>
     </div>
   </div>
@@ -45,7 +46,18 @@ canvas {
   display: block;
   vertical-align: bottom;
 }
+@keyframes pulse {
+  from {
+    max-width: 150px;
+  }
+  to {
+   max-width: 160px;
+  }
+}
 
+.pulse-single:active {
+  animation: pulse 0.2s 1 ease-out;
+}
 
 /* ---- particles.js container ---- */
 
@@ -54,28 +66,35 @@ canvas {
   width: 100%;
   height: 100%;
 }
+
 .planet {
-  width: 200;
-  height: 200;
-  background: blue;
-  display: block;
-  border-radius: 100px;
+  position: absolute;
+  max-width: 150px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
-  margin: 20px 0px 20px 0px;
+}
+
+.planet img {
+  max-width: 100%;
+  padding: 20px 0 0 0;
 }
 
 .space {
-  position: absolute;
-  right: 50%;
-  margin-right: -100px;
-  width: 200px;
-  text-align: center;
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
 
 .stats {
   text-align: center;
   font-size: 2em;
   font-family: monospace;
+  position: absolute;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  width: 500px;
 }
 
 .stats-title{
@@ -86,6 +105,10 @@ canvas {
 .unlock {
   cursor: pointer;
 } 
+
+.unlock:hover {
+  background:rgba(221, 221, 221, 0.7);
+}
 .unlocked{
   border: 0.5px #fff solid;
   padding: 5px;
@@ -93,7 +116,8 @@ canvas {
 }
 .unlock-container{
   border: #fff 1px solid;
-  float: right;
+  position: absolute;
+  right: 0;
   max-width: 30%;
   min-width: 31%;
   padding: 10px;
@@ -102,7 +126,7 @@ canvas {
 
 .stats-container{
   border: #fff 1px solid;
-  float: left;
+  position: absolute;
   max-width: 30%;
   min-width: 31%;
   padding: 10px;
@@ -126,6 +150,7 @@ canvas {
   const totalPeople = document.querySelector('.meatsacks-total');
   const totalMoney = document.querySelector('.currency-total');
   
+ 
   const totalPeoplePS = document.querySelector('.meatsacks-ps-total');
   const totalMoneyPS = document.querySelector('.currency-ps-total');
   
@@ -172,18 +197,26 @@ canvas {
       moneyCount = 0;
       peoplePerSecond = 0;
       moneyPerSecond = 0;
+      save();
+      setTimeout(() => {
+        window.innerHTML = "";
+        location.reload();
+      }, 500)
     })
 
   // Add currency per second to our bank
   function main() {
+    console.log(peoplePerSecond);
     peopleCount += peoplePerSecond;
     moneyCount += moneyPerSecond;
-    
+  
+
     totalPeople.textContent = Math.floor(peopleCount);
     totalMoney.textContent = Math.floor(moneyCount);
 
-    totalPeoplePS.textContent = peoplePerSecond;
-    totalMoneyPS.textContent = moneyPerSecond;
+    totalPeoplePS.textContent = Number.parseFloat(peoplePerSecond).toFixed(2);
+    totalMoneyPS.textContent = Number.parseFloat(moneyPerSecond).toFixed(2);
+    
     save();
     generateAvailableUnlocks()
   }
@@ -205,19 +238,15 @@ canvas {
     return elem;
   };
 
-  function unlockElement(elem) {
-      console.log(peoplePerSecond + parseFloat(elem.dataset.peoplemultiplier));
-
-      peoplePerSecond = peoplePerSecond + parseFloat(elem.dataset.peoplemultiplier);
+  function unlockElement(elem) {  
+      peoplePerSecond = parseFloat(peoplePerSecond) + parseFloat(elem.dataset.peoplemultiplier);
       moneyPerSecond = moneyPerSecond + parseFloat(elem.dataset.currencymultiplier);
 
+      console.log(elem.dataset.peoplemultiplier);
       console.log(peoplePerSecond, moneyPerSecond);
 
-      //peoplePerSecond = ((peoplePerSecond > 0 ? peoplePerSecond * elem.dataset.peoplemultiplyer : 1 * elem.dataset.peoplemultiplyer));
-      //moneyPerSecond = ((moneyPerSecond > 0 ? moneyPerSecond * elem.dataset.currencymultiplyer : 0 * elem.dataset.currencymultiplyer));
-      //peopleCount = elem.dataset.currencyCost;
-      //moneyCount = parseInt(moneyCount, 10) - parseInt(elem.dataset.currencycost, 10);
       unlocked.push(parseInt(elem.dataset.id,10));
+      elem.remove();
   }
 
   const getUnlocksDomList = (a, locked = false) => a
@@ -225,8 +254,10 @@ canvas {
       const outer = h('div', '', `unlock ${locked ? 'locked' : 'unlocked'}`);
       const nameDOM = h('span', unlock.title, 'unlock-name');
       const descDOM = h('div', unlock.description, 'unlock-desc');
-      const costDOM = h('span', unlock.currencycost, 'unlock-cost');
-      [nameDOM, descDOM, costDOM].forEach(elem => outer.appendChild(elem));
+      const costDOM = h('span', '🤑: ' + unlock.currencycost, 'unlock-cost');
+      const peopleMultiDOM = h('span', ' 👪 multiplier: ' + unlock.peoplemultiplier, 'unlock-cost');
+      //const costDOM = h('span', 'cost: ' + unlock.currencycost, 'unlock-cost');
+      [nameDOM, descDOM, costDOM, peopleMultiDOM].forEach(elem => outer.appendChild(elem));
       Object.keys(unlock).forEach(key => outer.dataset[key] = unlock[key]);
       outer.addEventListener('click', () => unlockElement(outer));
       return outer;      
