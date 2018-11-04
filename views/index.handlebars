@@ -3,9 +3,6 @@
 <div id='particles-js'>
   <div class="space">
 
-<ul class="ticker">
-  <li>Welcome to the world</li>
-</ul>
 <div class="meatsacks">Total meatsacks:
   <span class="meatsacks-total"></span>
 </div>
@@ -83,8 +80,8 @@ canvas {
   
   let peopleCount = 1;
   let moneyCount = 1;
-  let peoplePerSecond = 1;
-  let moneyPerSecond = 1;
+  let peoplePerSecond = 0;
+  let moneyPerSecond = 0;
   
 
   // some unlockable:
@@ -135,11 +132,9 @@ canvas {
 
   // add our clicks to our bank
   function generateAvailableUnlocks() {
-    socket.emit('requestUnlocks');
+    const elements = getUnlocksDomList(allUnlocks.filter(unlock => -1 == unlocked.indexOf(unlock.id)).filter(unlock => peopleCount >= unlock.peoplerequired && moneyCount >= unlock.currencyrequired));
 
-    const elements = getUnlocksDomList(allUnlocks.filter(unlock => peopleCount >= unlock.peoplerequired && moneyCount >= unlock.currencyrequired));
-
-    if(elements.length > unlocks.childNodes.length) {
+    if(elements.length !== unlocks.childNodes.length) {
       unlocks.innerHTML = "";
       elements.forEach(unlock => unlocks.appendChild(unlock));
     }
@@ -153,12 +148,11 @@ canvas {
   };
 
   function unlockElement(elem) {
-    {{!-- console.log(elem.dataset.peoplemultiplyer); --}}
-      moneyPerSecond = (moneyPerSecond || 1) * (elem.dataset.currencymultiplyer || 1);
-      peoplePerSecond = (peoplePerSecond || 1) * (elem.dataset.peoplemultiplyer || 1);
+      peoplePerSecond = ((peoplePerSecond > 0 ? peoplePerSecond * elem.dataset.peoplemultiplyer : 1 * elem.dataset.peoplemultiplyer));
+      moneyPerSecond = ((moneyPerSecond > 0 ? moneyPerSecond * elem.dataset.currencymultiplyer : 0 * elem.dataset.currencymultiplyer));
       //peopleCount = elem.dataset.currencyCost;
       moneyCount = parseInt(moneyCount, 10) - parseInt(elem.dataset.currencycost, 10);
-      {{!-- console.log({ moneyPerSecond, peoplePerSecond, moneyCount }) --}}
+      unlocked.push(parseInt(elem.dataset.id,10));
   }
 
   const getUnlocksDomList = (a, locked = false) => a

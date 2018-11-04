@@ -28,17 +28,11 @@ const io = socket(server);
 
 io.on('connection', sock => {
   sockLog('client connected');
-  // db.getUnlocks().then(({rows}) => {
-  //   setTimeout(() => sock.emit('unlocks', JSON.stringify(rows)), 100)
-  // });
-});
-
-io.on('requestUnlocks', sock => {
-  db.getUnlocks().then(({ rows }) => {
-    sock.emit('unlocks', JSON.stringify(rows));
+  db.getUnlocks().then(({rows}) => {
+    setTimeout(() => sock.emit('unlocks', JSON.stringify(rows)), 100)
   });
 });
-  
+
 const port = process.env.PORT || 8080;
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
