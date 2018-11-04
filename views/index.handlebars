@@ -17,7 +17,11 @@
       <img src="http://localhost:8080/images/planet.png">
     </div>
   </div>
-  <div class="reset">KILL ALL</div>
+  <div class="devbox">
+    <div class="reset">KILL ALL</div>
+    <div class="add-100">Add 100</div>
+    <div class="add-1000">Add 1000</div>
+  </div>
 
   <div class="unlock-container">
     <span class="store-title">Unlocks 🔓</span> 
@@ -141,14 +145,14 @@ canvas {
 .store-title{
   font-size: 1.5em;
 }
-
-.reset {
+.devbox {
   position: absolute;
-  cursor: pointer;
   bottom: 0;
+  cursor: pointer;
   font-size: 2em;
   color: red;
 }
+
 </style>
 <script>
   const totalPeople = document.querySelector('.meatsacks-total');
@@ -161,6 +165,9 @@ canvas {
   const planet = document.querySelector('.planet');
 
   const reset = document.querySelector('.reset');
+
+  const addH = document.querySelector('.add-100');
+  const addT = document.querySelector('.add-1000');
 
   const unlocks = document.querySelector('.unlocks');
   
@@ -192,7 +199,11 @@ canvas {
   planet.addEventListener('click', (ev) => {
     ev.preventDefault();
     peopleCount += 1;
+    if(moneyPerSecond > 0) {
+      moneyCount += 1;
+    }
     totalPeople.textContent = Math.floor(peopleCount);
+    totalMoney.textContent = Math.floor(moneyCount);
   })
 
   reset.addEventListener('click', (ev) => {
@@ -207,6 +218,18 @@ canvas {
         location.reload();
       }, 500)
     })
+
+  addH.addEventListener('click', ev => {
+    ev.preventDefault();
+    peopleCount += 100;
+    save();
+  });
+
+  addT.addEventListener('click', ev => {
+    ev.preventDefault();
+    peopleCount += 1000;
+    save();
+  });
 
   // Add currency per second to our bank
   function main() {
@@ -299,7 +322,7 @@ canvas {
   window.onload = () => {
     load();
     main();
-    setInterval(main, 1000);
+    setInterval(main, 500);
   }
 
   socket.on('unlocks', (rows) => {
