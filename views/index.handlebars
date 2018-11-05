@@ -1,159 +1,41 @@
-{{!-- Just a small warning... this file holds the entirety of the frontend app  --}}
-{{!-- Yup... HTML, CSS and Javascript ALL in one file --}}
-{{!-- Beautiful right? --}}
-
-<div id='particles-js'>
+<link rel="stylesheet" href="css/main.css">
+<div id="particles">
   <div class="space">
-    <div class="stats">
+    <div class="stats-container white-border">
+      <span class="title">Stats 📈</span>
+      <div class="totals">Total 👪 P/S:
+        <span class="meatsacks-ps-total">0.00</span>
+      </div>
+      <div class="totals">Total 🤑 P/S:
+        <span class="currency-ps-total">0.00</span>
+      </div>
+    </div>
+    <div class="main-container">
       <h2>Planet: ITSociety</h2>
-      <div class="meatsacks">Total 👪:
-        <span class="meatsacks-total"></span>
+      <div class="title">Total 👪:
+        <span class="meatsacks-total">0</span>
       </div>
-      <div class="currency">Total 🤑:
-        <span class="currency-total"></span>
+      <div class="title">Total 🤑:
+        <span class="currency-total">0</span>
+      </div>
+      <div class="planet-container">
+        <div class="planet pulse">
+          <img src="http://localhost:8080/images/planet.png">
+        </div>
       </div>
     </div>
-    <div class="planet pulse-single">
-      <img src="http://localhost:8080/images/planet.png">
+    <div class="unlock-container white-border">
+      <span class="title">Unlocks 🔓</span>
+      <div class="unlocks"></div>
     </div>
   </div>
-  <div class="devbox">
-    <div class="reset">KILL ALL</div>
-    <div class="add-100">Add 100</div>
-    <div class="add-1000">Add 1000</div>
-  </div>
-
-  <div class="unlock-container">
-    <span class="store-title">Unlocks 🔓</span> 
-    <div class="unlocks"></div>
-  </div> 
-  
-  <div class="stats-container">
-    <span class="stats-title">Stats 📈</span>
-    <div class="meatsacks">Total 👪 P/S:
-      <span class="meatsacks-ps-total"></span>
-    </div>
-    <div class="currency">Total 🤑 P/S:
-      <span class="currency-ps-total"></span>
-    </div>
-  </div>
-  
 </div>
 
-<style>
-  /* ---- reset ---- */
-
-body {
-  margin: 0;
-  background-color: #17182f;
-  color: #fff;
-  font-family: monospace;
-}
-
-canvas {
-  display: block;
-  vertical-align: bottom;
-}
-@keyframes pulse {
-  from {
-    max-width: 150px;
-  }
-  to {
-   max-width: 160px;
-  }
-}
-
-.pulse-single:active {
-  animation: pulse 0.2s 1 ease-out;
-}
-
-/* ---- particles.js container ---- */
-
-#particles-js {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.planet {
-  position: absolute;
-  max-width: 150px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-}
-
-.planet img {
-  max-width: 100%;
-  padding: 20px 0 0 0;
-}
-
-.space {
-  align-items: center;
-  justify-content: center;
-  display: flex;
-}
-
-.stats {
-  text-align: center;
-  font-size: 2em;
-  font-family: monospace;
-  position: absolute;
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-  transform: translateX(-50%);
-  width: 500px;
-}
-
-.stats-title{
-  text-align: left !important;
-  font-size: 1.5em;
-}
-
-.unlock {
-  cursor: pointer;
-} 
-
-.unlock:hover {
-  background:rgba(221, 221, 221, 0.7);
-}
-.unlocked{
-  border: 0.5px #fff solid;
-  padding: 5px;
-  margin: 10px;
-}
-.unlock-container{
-  border: #fff 1px solid;
-  position: absolute;
-  right: 0;
-  max-width: 30%;
-  min-width: 31%;
-  padding: 10px;
-  margin: 10px 10px 0 0;
-}
-
-.stats-container{
-  border: #fff 1px solid;
-  position: absolute;
-  max-width: 30%;
-  min-width: 31%;
-  padding: 10px;
-  text-align: right;
-  margin: 10px 0 0 10px;
-}
-
-.store-title{
-  font-size: 1.5em;
-}
-.devbox {
-  position: absolute;
-  bottom: 0;
-  cursor: pointer;
-  font-size: 2em;
-  color: red;
-}
-
-</style>
+<div class="devbox">
+  <div class="reset">reset</div>
+  <div class="add-100"></div>
+  <div class="add-1000"></div>
+</div>
 <script>
   const totalPeople = document.querySelector('.meatsacks-total');
   const totalMoney = document.querySelector('.currency-total');
@@ -278,7 +160,7 @@ canvas {
 
   const getUnlocksDomList = (a, locked = false) => a
     .map(unlock => {
-      const outer = h('div', '', `unlock ${locked ? 'locked' : 'unlocked'}`);
+      const outer = h('div', '', `unlock white-border ${locked ? 'locked' : 'unlocked'}`);
       const nameDOM = h('span', unlock.title, 'unlock-name');
       const descDOM = h('div', unlock.description, 'unlock-desc');
       const costDOM = h('span', '🤑: ' + unlock.currencycost, 'unlock-cost');
@@ -330,123 +212,120 @@ canvas {
       allUnlocks.length = 0;
       console.log({ ...parsed })
       allUnlocks.push(...parsed);
-
-      //if (interval) clearInterval(interval);
-      //interval = setInterval(main, 1000);
     });
 </script>
 
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-
 <script>
-particlesJS("particles-js", {
-  "particles": {
-    "number": {
-      "value": 355,
-      "density": {
-        "enable": true,
-        "value_area": 789.1476416322727
-      }
-    },
-    "color": {
-      "value": "#ffffff"
-    },
-    "shape": {
-      "type": "circle",
-      "stroke": {
-        "width": 0,
-        "color": "#000000"
-      },
-      "polygon": {
-        "nb_sides": 5
-      },
-      "image": {
-        "src": "img/github.svg",
-        "width": 100,
-        "height": 100
-      }
-    },
-    "opacity": {
-      "value": 0.48927153781200905,
-      "random": false,
-      "anim": {
-        "enable": true,
-        "speed": 0.2,
-        "opacity_min": 0,
-        "sync": false
-      }
-    },
-    "size": {
-      "value": 2,
-      "random": true,
-      "anim": {
-        "enable": true,
-        "speed": 2,
-        "size_min": 0,
-        "sync": false
-      }
-    },
-    "line_linked": {
-      "enable": false,
-      "distance": 150,
-      "color": "#ffffff",
-      "opacity": 0.4,
-      "width": 1
-    },
-    "move": {
-      "enable": true,
-      "speed": 0.2,
-      "direction": "none",
-      "random": true,
-      "straight": false,
-      "out_mode": "out",
-      "bounce": false,
-      "attract": {
-        "enable": false,
-        "rotateX": 600,
-        "rotateY": 1200
-      }
-    }
-  },
-  "interactivity": {
-    "detect_on": "canvas",
-    "events": {
-      "onhover": {
-        "enable": true,
-        "mode": "bubble"
-      },
-      "onclick": {
-        "enable": true,
-        "mode": "push"
-      },
-      "resize": true
-    },
-    "modes": {
-      "grab": {
-        "distance": 400,
-        "line_linked": {
-          "opacity": 1
+  particlesJS("particles", {
+    "particles": {
+      "number": {
+        "value": 355,
+        "density": {
+          "enable": true,
+          "value_area": 789.1476416322727
         }
       },
-      "bubble": {
-        "distance": 83.91608391608392,
-        "size": 1,
-        "duration": 3,
-        "opacity": 1,
-        "speed": 3
+      "color": {
+        "value": "#ffffff"
       },
-      "repulse": {
-        "distance": 200,
-        "duration": 0.4
+      "shape": {
+        "type": "circle",
+        "stroke": {
+          "width": 0,
+          "color": "#000000"
+        },
+        "polygon": {
+          "nb_sides": 5
+        },
+        "image": {
+          "src": "img/github.svg",
+          "width": 100,
+          "height": 100
+        }
       },
-      "push": {
-        "particles_nb": 4
+      "opacity": {
+        "value": 0.48927153781200905,
+        "random": false,
+        "anim": {
+          "enable": true,
+          "speed": 0.2,
+          "opacity_min": 0,
+          "sync": false
+        }
       },
-      "remove": {
-        "particles_nb": 2
+      "size": {
+        "value": 2,
+        "random": true,
+        "anim": {
+          "enable": true,
+          "speed": 2,
+          "size_min": 0,
+          "sync": false
+        }
+      },
+      "line_linked": {
+        "enable": false,
+        "distance": 150,
+        "color": "#ffffff",
+        "opacity": 0.4,
+        "width": 1
+      },
+      "move": {
+        "enable": true,
+        "speed": 0.2,
+        "direction": "none",
+        "random": true,
+        "straight": false,
+        "out_mode": "out",
+        "bounce": false,
+        "attract": {
+          "enable": false,
+          "rotateX": 600,
+          "rotateY": 1200
+        }
       }
-    }
-  },
-  "retina_detect": true
-});
+    },
+    "interactivity": {
+      "detect_on": "canvas",
+      "events": {
+        "onhover": {
+          "enable": true,
+          "mode": "bubble"
+        },
+        "onclick": {
+          "enable": true,
+          "mode": "push"
+        },
+        "resize": true
+      },
+      "modes": {
+        "grab": {
+          "distance": 400,
+          "line_linked": {
+            "opacity": 1
+          }
+        },
+        "bubble": {
+          "distance": 83.91608391608392,
+          "size": 1,
+          "duration": 3,
+          "opacity": 1,
+          "speed": 3
+        },
+        "repulse": {
+          "distance": 200,
+          "duration": 0.4
+        },
+        "push": {
+          "particles_nb": 4
+        },
+        "remove": {
+          "particles_nb": 2
+        }
+      }
+    },
+    "retina_detect": true
+  });
 </script>
+

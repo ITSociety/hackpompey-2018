@@ -1,0 +1,85 @@
+body {
+  margin: 0;
+  background-color: #17182f;
+  color: #fff;
+  font-family: monospace;
+}
+
+/* General layout */
+.space {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.main-container {
+  text-align: center;
+}
+
+.planet-container {
+  width: 200px;
+}
+
+.planet {
+  max-width: 200px;
+  cursor: pointer;
+  margin-top: 100px;
+}
+
+.planet img {
+  width: 100%;
+}
+
+/* General styles */
+.white-border {
+  border: #fff 1px solid;
+  width: 25%;
+  padding: 10px;
+}
+
+.unlock-container {
+  margin: 10px 10px 0 0;
+}
+
+.unlock {
+  width: auto!important;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.unlock:hover {
+  background:rgba(221, 221, 221, 0.7);
+}
+ 
+.unlock-name {
+  font-weight: bold;
+}
+
+.stats-container {
+  margin: 10 0 0 10px;
+}
+
+.title {
+  font-size: 1.5em;
+}
+
+.totals:first-of-type {
+  margin-top: 10px;
+}
+
+/* Animation Stuff */
+
+@keyframes pulse {
+  from {
+    max-width: 200px;
+  }
+  to {
+    max-width: 190px;
+  }
+}
+
+.pulse:active {
+  animation: pulse 0.2s 1 ease-out;
+}
